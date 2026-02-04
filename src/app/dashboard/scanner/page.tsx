@@ -43,6 +43,7 @@ export default function ScannerPage() {
   const videoRef = useRef(null as HTMLVideoElement | null)
   const canvasRef = useRef(null as HTMLCanvasElement | null)
   const scannerRef = useRef(null as unknown)
+  const [hasPermission, setHasPermission] = useState(null)
 
   // Get available cameras
   useEffect(() => {
