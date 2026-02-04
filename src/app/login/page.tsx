@@ -103,7 +103,7 @@ export default function LoginPage() {
                   background: "linear-gradient(135deg, oklch(0.55 0.2 145) 0%, oklch(0.45 0.18 145) 100%)"
                 }}
               >
-                <Image src="/public/logo.png" alt="Logo" width={128}
+                <Image src="/favicon.ico" alt="Logo" width={128}
                 height={128} className="rounded-full" />
               </div>
             </motion.div>
