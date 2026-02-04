@@ -15,8 +15,13 @@ import {
   Factory,
   Wheat,
   RefreshCw,
-  Loader2
+  Loader2,
+  StopCircle
 } from "lucide-react"
+import { useLanguageStore } from "@/lib/store"
+import { t } from "@/lib/translations"
+
+import { Html5Qrcode } from "html5-qrcode"
 
 interface ProductData {
   name: string
@@ -27,12 +32,12 @@ interface ProductData {
 }
 
 interface CameraDevice {
-  deviceId: string
+  id: string
   label: string
-  kind: string
 }
 
 export default function ScannerPage() {
+  const { language } = useLanguageStore()
   const [isScanning, setIsScanning] = useState(false)
   const [scannedCode, setScannedCode] = useState(null as string | null)
   const [productData, setProductData] = useState(null as ProductData | null)
@@ -40,35 +45,39 @@ export default function ScannerPage() {
   const [error, setError] = useState(null as string | null)
   const [cameras, setCameras] = useState([] as CameraDevice[])
   const [selectedCamera, setSelectedCamera] = useState("")
-  const videoRef = useRef(null as HTMLVideoElement | null)
-  const canvasRef = useRef(null as HTMLCanvasElement | null)
-  const scannerRef = useRef(null as unknown)
-  const [hasPermission, setHasPermission] = useState(null)
+  const [isCameraStarted, setIsCameraStarted] = useState(false)
+  const qrCodeScannerRef = useRef(null as any)
 
-  // Get available cameras
+  // Initialize cameras list
   useEffect(() => {
-    const getCameras = async () => {
-      try {
-        const devices = await navigator.mediaDevices.enumerateDevices()
-        const videoDevices = devices.filter(device => device.kind === "videoinput") as CameraDevice[]
-        setCameras(videoDevices)
-        
-        // Select back camera by default if available
-        const backCamera = videoDevices.find((device: CameraDevice) => 
-          device.label.toLowerCase().includes("back") || 
-          device.label.toLowerCase().includes("rear")
-        )
-        if (backCamera) {
-          setSelectedCamera(backCamera.deviceId)
-        } else if (videoDevices.length > 0) {
-          setSelectedCamera(videoDevices[0].deviceId)
-        }
-      } catch (err) {
-        console.error("Error getting cameras:", err)
+    Html5Qrcode.getCameras().then((devices: CameraDevice[]) => {
+      if (devices && devices.length) {
+        setCameras(devices)
+        // Select back camera by default
+        const backCamera = devices.find(device => 
+          device.label.toLowerCase().includes("back")
+        ) || devices[0]
+        setSelectedCamera(backCamera.id)
       }
-    }
-    getCameras()
+    }).catch((err: any) => {
+      console.error("Error getting cameras:", err)
+      setError("لم يتم العثور على كاميرا")
+    })
   }, [])
+
+
+  // Callback when barcode is successfully scanned
+  const onScanSuccess = (decodedText: string, decodedResult: any) => {
+    console.log("✅ Barcode scanned:", decodedText)
+    setScannedCode(decodedText)
+    setError(null)
+    fetchProductData(decodedText)
+  }
+
+  // Callback for scan failures (can be ignored)
+  const onScanFailure = (error: any) => {
+    // Silent failures during scanning are normal
+  }
 
   // Fetch product data from Open Food Facts API
   const fetchProductData = async (barcode: string) => {
@@ -82,6 +91,7 @@ export default function ScannerPage() {
       if (!data || !data.product) {
         setError("المنتج غير موجود في قاعدة البيانات")
         setProductData(null)
+        setIsLoading(false)
         return
       }
 
@@ -89,10 +99,12 @@ export default function ScannerPage() {
       const name = product.product_name || "غير معروف"
       const brand = product.brands || "غير معروف"
       
-      const ingredients = product.ingredients_text_ar || 
+      const ingredientsText = product.ingredients_text_ar || 
                        product.ingredients_text_fr || 
                        product.ingredients_text_en || 
                        product.ingredients_text || ""
+
+      const ingredients = ingredientsText ? ingredientsText.split(',').map((i: string) => i.trim()) : ["لا توجد مكونات"]
 
       let glutenStatus: "free" | "contains" | "unknown" = "unknown"
       let glutenMessage = "غير محدد"
@@ -111,25 +123,21 @@ export default function ScannerPage() {
           "farine", "blé", "orge", "seigle", "rye"
         ]
         const hasGluten = glutenWords.some(word => 
-          ingredients.toLowerCase().includes(word.toLowerCase())
+          ingredientsText.toLowerCase().includes(word.toLowerCase())
         )
         if (hasGluten) {
           glutenStatus = "contains"
           glutenMessage = "يحتوي على الغلوتين (تحليل المكونات) ❌"
-        } else if (ingredients) {
+        } else if (ingredientsText) {
           glutenStatus = "free"
           glutenMessage = "خالٍ من الغلوتين (تحليل المكونات) ✅"
         }
       }
 
-      const ingredientsList = ingredients
-        ? ingredients.split(/[,،]/).map((i: string) => i.trim()).filter((i: string) => i)
-        : []
-
       setProductData({
         name,
         brand,
-        ingredients: ingredientsList,
+        ingredients,
         glutenStatus,
         glutenMessage
       })
@@ -144,77 +152,65 @@ export default function ScannerPage() {
 
   // Start camera scanning
   const startScanning = async () => {
+    if (isCameraStarted) {
+      return // Camera already started
+    }
+
     try {
       setError(null)
-      setHasPermission(null)
       
-      const stream = await navigator.mediaDevices.getUserMedia({
-        video: {
-          deviceId: selectedCamera ? { exact: selectedCamera } : undefined,
-          facingMode: selectedCamera ? undefined : { ideal: "environment" }
-        }
-      })
-
-      if (videoRef.current) {
-        videoRef.current.srcObject = stream
-        await videoRef.current.play()
-        setIsScanning(true)
-        setHasPermission(true)
-        
-        // Load and initialize barcode scanner
-        const { BrowserMultiFormatReader } = await import("@zxing/library")
-        scannerRef.current = new BrowserMultiFormatReader()
-        
-        scannerRef.current.decodeFromVideoDevice(
-          selectedCamera || undefined,
-          videoRef.current,
-          (result: unknown) => {
-            if (result && typeof result === 'object' && result !== null && 'getText' in result) {
-              const code = (result as { getText: () => string }).getText()
-              setScannedCode(code)
-              stopScanning()
-              fetchProductData(code)
-            }
-          }
-        )
+      if (!selectedCamera) {
+        setError("الرجاء اختيار كاميرا")
+        return
       }
-    } catch (err: unknown) {
-      console.error("Camera error:", err)
-      if (err && typeof err === 'object' && 'name' in err && (err as { name: string }).name === "NotAllowedError") {
-        setError("لم يتم السماح بالوصول إلى الكاميرا. يرجى تفعيل الصلاحيات من إعدادات المتصفح.")
-      } else {
-        setError("حدث خطأ أثناء تشغيل الكاميرا")
+
+      qrCodeScannerRef.current = new Html5Qrcode("reader")
+
+      await qrCodeScannerRef.current.start(
+        selectedCamera,
+        {
+          fps: 10,
+          qrbox: { width: 250, height: 250 }
+        },
+        onScanSuccess,
+        onScanFailure
+      )
+
+      setIsCameraStarted(true)
+      setIsScanning(true)
+    } catch (err: any) {
+      console.error("Error starting camera:", err)
+      setError("حدث خطأ أثناء بدء الكاميرا. تحقق من إعدادات المتصفح.")
+    }
+  }
+
+  // Stop camera scanning
+  const stopScanning = async () => {
+    if (qrCodeScannerRef.current && isCameraStarted) {
+      try {
+        await qrCodeScannerRef.current.stop()
+        qrCodeScannerRef.current = null
+        setIsCameraStarted(false)
+        setIsScanning(false)
+      } catch (err) {
+        console.error("Error stopping camera:", err)
       }
     }
   }
 
-  // Stop scanning
-  const stopScanning = () => {
-    if (videoRef.current?.srcObject) {
-      const stream = videoRef.current.srcObject as MediaStream
-      stream.getTracks().forEach(track => track.stop())
-      videoRef.current.srcObject = null
-    }
-    if (scannerRef.current) {
-      scannerRef.current.reset()
-    }
-    setIsScanning(false)
-  }
-
-  // Reset for new scan
+  // Reset scan
   const resetScan = () => {
     setScannedCode(null)
     setProductData(null)
     setError(null)
-    startScanning()
+    setIsLoading(false)
   }
-
-  // Cleanup on unmount
-  useEffect(() => {
+ useEffect(() => {
     return () => {
       stopScanning()
     }
   }, [])
+ 
 
   return (
     <div className="space-y-6">
@@ -250,7 +246,7 @@ export default function ScannerPage() {
             </CardHeader>
             <CardContent className="space-y-4">
               {/* Camera Selection */}
-              {cameras.length > 1 && (
+              {cameras.length > 0 && (
                 <div className="space-y-2">
                   <label className="text-sm font-medium">اختر الكاميرا:</label>
                   <select
@@ -261,7 +257,7 @@ export default function ScannerPage() {
                     aria-label="اختر الكاميرا"
                   >
                     {cameras.map((camera: CameraDevice) => (
-                      <option key={camera.deviceId} value={camera.deviceId}>
+                      <option key={camera.id} value={camera.id}>
                         {camera.label || `كاميرا ${cameras.indexOf(camera) + 1}`}
                       </option>
                     ))}
@@ -269,41 +265,18 @@ export default function ScannerPage() {
                 </div>
               )}
 
-              {/* Video Preview */}
+              {/* Video Preview Container */}
               <div className="relative aspect-video bg-muted rounded-xl overflow-hidden border-2 border-primary/20">
-                {isScanning ? (
-                  <>
-                    <video
-                      ref={videoRef}
-                      className="w-full h-full object-cover"
-                      playsInline
-                      muted
-                    />
-                    {/* Scan overlay */}
-                    <div className="absolute inset-0 flex items-center justify-center">
-                      <div className="w-64 h-64 border-2 border-primary rounded-lg animate-pulse">
-                        <div className="absolute top-0 left-0 w-8 h-8 border-t-4 border-l-4 border-primary rounded-tl-lg" />
-                        <div className="absolute top-0 right-0 w-8 h-8 border-t-4 border-r-4 border-primary rounded-tr-lg" />
-                        <div className="absolute bottom-0 left-0 w-8 h-8 border-b-4 border-l-4 border-primary rounded-bl-lg" />
-                        <div className="absolute bottom-0 right-0 w-8 h-8 border-b-4 border-r-4 border-primary rounded-br-lg" />
-                      </div>
-                    </div>
-                    <div className="absolute bottom-4 inset-x-4 text-center">
-                      <Badge variant="secondary" className="bg-black/50 text-white">
-                        وجّه الكاميرا نحو الباركود
-                      </Badge>
-                    </div>
-                  </>
-                ) : (
-                  <div className="absolute inset-0 flex flex-col items-center justify-center gap-4">
+                {/* html5-qrcode will create video element inside this div */}
+                <div id="reader" className="w-full h-full"></div>
+                
+                {!isScanning && (
+                  <div className="absolute inset-0 flex flex-col items-center justify-center gap-4 bg-muted">
                     <ScanBarcode className="w-16 h-16 text-muted-foreground" />
                     <p className="text-muted-foreground">اضغط للبدء بالمسح</p>
                   </div>
                 )}
               </div>
-
-              {/* Hidden canvas for processing */}
-              <canvas ref={canvasRef} className="hidden" />
 
               {/* Error Message */}
               {error && (
@@ -315,13 +288,13 @@ export default function ScannerPage() {
               {/* Control Buttons */}
               <div className="flex gap-3">
                 {!isScanning ? (
-                  <Button onClick={startScanning} className="flex-1 h-12">
+                  <Button onClick={startScanning} className="flex-1 h-12" disabled={!selectedCamera}>
                     <Camera className="w-5 h-5 ml-2" />
                     بدء المسح
                   </Button>
                 ) : (
                   <Button onClick={stopScanning} variant="destructive" className="flex-1 h-12">
-                    <XCircle className="w-5 h-5 ml-2" />
+                    <StopCircle className="w-5 h-5 ml-2" />
                     إيقاف
                   </Button>
                 )}
