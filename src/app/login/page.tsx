@@ -9,7 +9,7 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { useAuthStore } from "@/lib/store"
-
+import Image from "next/image"
 export default function LoginPage() {
   const router = useRouter()
   const { login, register } = useAuthStore()
@@ -103,7 +103,8 @@ export default function LoginPage() {
                   background: "linear-gradient(135deg, oklch(0.55 0.2 145) 0%, oklch(0.45 0.18 145) 100%)"
                 }}
               >
-                <Wheat className="w-10 h-10 text-white" />
+                <Image src="/logo.png" alt="Logo" width={128}
+                height={128} className="rounded-full" />
               </div>
             </motion.div>
             
