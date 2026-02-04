@@ -8,11 +8,15 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { useAuthStore } from "@/lib/store"
+import { useAuthStore, useLanguageStore } from "@/lib/store"
+import { t, getDirection } from "@/lib/translations"
+import { LanguageSwitcher } from "@/components/LanguageSwitcher"
 import Image from "next/image"
 export default function LoginPage() {
   const router = useRouter()
   const { login, register } = useAuthStore()
+  const { language } = useLanguageStore()
+  const direction = getDirection(language)
   const [isLogin, setIsLogin] = useState(true)
   const [showPassword, setShowPassword] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
@@ -45,7 +49,12 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="min-h-screen relative overflow-hidden flex items-center justify-center p-4" dir="rtl">
+    <div className="min-h-screen relative overflow-hidden flex items-center justify-center p-4" dir={direction}>
+      {/* Language Switcher - Fixed position */}
+      <div className="fixed top-4 right-4 z-50">
+        <LanguageSwitcher />
+      </div>
+      
       {/* Animated background */}
       <div 
         className="absolute inset-0 z-0"
@@ -109,12 +118,12 @@ export default function LoginPage() {
             </motion.div>
             
             <CardTitle className="text-3xl font-bold text-white">
-              {isLogin ? "مرحباً بعودتك" : "إنشاء حساب جديد"}
+              {isLogin ? t('auth.welcomeBack', language) : t('auth.createAccount', language)}
             </CardTitle>
             <CardDescription className="text-white/70">
               {isLogin 
-                ? "سجل دخولك للوصول إلى دليلك الشامل" 
-                : "انضم إلينا لحياة صحية خالية من الغلوتين"
+                ? t('auth.loginDescription', language)
+                : t('auth.registerDescription', language)
               }
             </CardDescription>
           </CardHeader>
@@ -130,13 +139,13 @@ export default function LoginPage() {
                     transition={{ duration: 0.3 }}
                   >
                     <div className="space-y-2">
-                      <Label htmlFor="name" className="text-white/90">الاسم الكامل</Label>
+                      <Label htmlFor="name" className="text-white/90">{t('auth.fullName', language)}</Label>
                       <div className="relative">
                         <User className="absolute right-3 top-1/2 -translate-y-1/2 w-5 h-5 text-white/50" />
                         <Input
                           id="name"
                           type="text"
-                          placeholder="أدخل اسمك"
+                          placeholder={t('auth.enterName', language)}
                           value={formData.name}
                           onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                           className="pr-10 bg-white/10 border-white/20 text-white placeholder:text-white/40 focus:border-accent"
@@ -148,7 +157,7 @@ export default function LoginPage() {
               </AnimatePresence>
 
               <div className="space-y-2">
-                <Label htmlFor="email" className="text-white/90">البريد الإلكتروني</Label>
+                <Label htmlFor="email" className="text-white/90">{t('auth.email', language)}</Label>
                 <div className="relative">
                   <Mail className="absolute right-3 top-1/2 -translate-y-1/2 w-5 h-5 text-white/50" />
                   <Input
@@ -164,7 +173,7 @@ export default function LoginPage() {
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="password" className="text-white/90">كلمة المرور</Label>
+                <Label htmlFor="password" className="text-white/90">{t('auth.password', language)}</Label>
                 <div className="relative">
                   <Lock className="absolute right-3 top-1/2 -translate-y-1/2 w-5 h-5 text-white/50" />
                   <Input
@@ -181,7 +190,7 @@ export default function LoginPage() {
                     onClick={() => setShowPassword(!showPassword)}
                     className="absolute left-3 top-1/2 -translate-y-1/2 text-white/50 hover:text-white/80 transition-colors"
                   >
-                    {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+                    {showPassword ? <EyeOff className="w-5 h-5 text-red-500" /> : <Eye className="w-5 h-5 text-black" />}
                   </button>
                 </div>
               </div>
@@ -203,7 +212,7 @@ export default function LoginPage() {
                   </motion.div>
                 ) : (
                   <>
-                    {isLogin ? "تسجيل الدخول" : "إنشاء الحساب"}
+                    {isLogin ? t('auth.login', language) : t('auth.register', language)}
                     <ArrowRight className="mr-2 w-5 h-5" />
                   </>
                 )}
@@ -217,9 +226,9 @@ export default function LoginPage() {
                 className="text-white/70 hover:text-white transition-colors"
               >
                 {isLogin ? (
-                  <>ليس لديك حساب؟ <span className="text-accent font-semibold">سجل الآن</span></>
+                  <>{t('auth.noAccount', language)} <span className="text-accent font-semibold">{t('auth.registerNow', language)}</span></>
                 ) : (
-                  <>لديك حساب بالفعل؟ <span className="text-accent font-semibold">سجل دخولك</span></>
+                  <>{t('auth.hasAccount', language)} <span className="text-accent font-semibold">{t('auth.loginNow', language)}</span></>
                 )}
               </button>
             </div>

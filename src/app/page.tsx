@@ -6,6 +6,9 @@ import { motion, AnimatePresence } from "framer-motion"
 import { SplashScreen } from "@/components/splash/SplashScreen"
 import { Button } from "@/components/ui/button"
 import { ArrowLeft, Sparkles, Heart, Shield, BookOpen } from "lucide-react"
+import { useLanguageStore } from "@/lib/store"
+import { t, getDirection } from "@/lib/translations"
+import { LanguageSwitcher } from "@/components/LanguageSwitcher"
 import Image from "next/image"
 
 // Generate random values outside component to avoid re-renders
@@ -28,6 +31,8 @@ const backgroundElements = generateBackgroundElements()
 export default function Home() {
   const router = useRouter()
   const [showSplash, setShowSplash] = useState(true)
+  const { language } = useLanguageStore()
+  const direction = getDirection(language)
 
   if (showSplash) {
     return <SplashScreen onComplete={() => setShowSplash(false)} />
@@ -40,7 +45,7 @@ export default function Home() {
         animate={{ opacity: 1 }}
         transition={{ duration: 0.5 }}
         className="min-h-screen relative overflow-hidden"
-        dir="rtl"
+        dir={direction}
       >
         {/* Background */}
         <div className="absolute inset-0 z-0 bg-gradient-to-br from-[oklch(0.25_0.08_145)] via-[oklch(0.35_0.1_145)] to-[oklch(0.25_0.08_145)]" />
@@ -74,7 +79,7 @@ export default function Home() {
         {/* Content */}
         <div className="relative z-10 min-h-screen flex flex-col">
           {/* Header */}
-          <header className="p-6">
+          <header className="p-6 flex justify-between items-center">
             <motion.div
               initial={{ opacity: 0, y: -20 }}
               animate={{ opacity: 1, y: 0 }}
@@ -84,7 +89,14 @@ export default function Home() {
               <div className="w-12 h-12 rounded-full flex items-center justify-center overflow-hidden bg-gradient-to-br from-[oklch(0.55_0.2_145)] to-[oklch(0.45_0.18_145)]">
                 <Image src="/favicon.ico" alt="Logo" width={128} height={128} className="rounded-full" />
               </div>
-              <span className="text-2xl font-bold text-white">CILIAC</span>
+              <span className="text-2xl font-bold text-white">{t('appName', language)}</span>
+            </motion.div>
+            <motion.div
+              initial={{ opacity: 0, y: -20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.3 }}
+            >
+              <LanguageSwitcher />
             </motion.div>
           </header>
 
@@ -103,16 +115,15 @@ export default function Home() {
                 className="inline-flex items-center gap-2 px-4 py-2 rounded-full mb-6 bg-[oklch(0.65_0.15_80_/_0.2)]"
               >
                 <Sparkles className="w-4 h-4 text-amber-400" />
-                <span className="text-white/90 text-sm">دليلك الشامل لحياة صحية</span>
+                <span className="text-white/90 text-sm">{t('appTagline', language)}</span>
               </motion.div>
 
               <h1 className="text-5xl md:text-6xl font-bold text-white mb-6 leading-tight">
-                حياة <span className="text-[oklch(0.65_0.15_80)]">خالية</span> من الغلوتين
+                {t('splash.welcome', language)} <span className="text-[oklch(0.65_0.15_80)]">{t('appName', language)}</span>
               </h1>
               
               <p className="text-xl text-white/80 mb-8 leading-relaxed">
-                اكتشف عالماً من الوصفات الشهية، النصائح الغذائية، والموارد المفيدة 
-                لمرضى حساسية القمح (السيلياك)
+                {t('splash.tagline', language)}
               </p>
 
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
@@ -124,7 +135,7 @@ export default function Home() {
                     background: "linear-gradient(135deg, oklch(0.65 0.15 80) 0%, oklch(0.55 0.18 80) 100%)"
                   }}
                 >
-                  ابدأ الآن
+                  {t('splash.getStarted', language)}
                   <ArrowLeft className="mr-2 w-5 h-5" />
                 </Button>
                 
@@ -134,7 +145,7 @@ export default function Home() {
                   variant="outline"
                   className="h-14 px-8 text-lg font-semibold border-white/30 "
                 >
-                  تسجيل الدخول
+                  {t('auth.login', language)}
                 </Button>
               </div>
             </motion.div>
@@ -149,18 +160,18 @@ export default function Home() {
               {[
                 {
                   icon: BookOpen,
-                  title: "وصفات متنوعة",
-                  description: "مئات الوصفات الخالية من الغلوتين"
+                  title: language === 'ar' ? 'وصفات متنوعة' : language === 'fr' ? 'Recettes variées' : 'Varied Recipes',
+                  description: language === 'ar' ? 'مئات الوصفات الخالية من الغلوتين' : language === 'fr' ? 'Des centaines de recettes sans gluten' : 'Hundreds of gluten-free recipes'
                 },
                 {
                   icon: Heart,
-                  title: "نصائح صحية",
-                  description: "إرشادات غذائية من متخصصين"
+                  title: language === 'ar' ? 'نصائح صحية' : language === 'fr' ? 'Conseils santé' : 'Health Tips',
+                  description: language === 'ar' ? 'إرشادات غذائية من متخصصين' : language === 'fr' ? 'Conseils nutritionnels de spécialistes' : 'Nutritional guidance from specialists'
                 },
                 {
                   icon: Shield,
-                  title: "حياة آمنة",
-                  description: "دليل للتعامل مع السيلياك يومياً"
+                  title: language === 'ar' ? 'حياة آمنة' : language === 'fr' ? 'Vie sûre' : 'Safe Life',
+                  description: language === 'ar' ? 'دليل للتعامل مع السيلياك يومياً' : language === 'fr' ? 'Guide pour gérer la maladie cœliaque au quotidien' : 'Guide to managing celiac disease daily'
                 }
               ].map((feature, index) => (
                 <motion.div
