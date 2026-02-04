@@ -22,7 +22,8 @@ import {
   Moon,
   ChevronRight,
   User,
-  ScanBarcode
+  ScanBarcode,
+  FileText
 } from "lucide-react"
 import {
   Sidebar,
@@ -41,24 +42,28 @@ import {
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
 import { Separator } from "@/components/ui/separator"
-import { useAuthStore } from "@/lib/store"
+import { useAuthStore, useLanguageStore } from "@/lib/store"
 import { useTheme } from "next-themes"
 import { useEffect } from "react"
+import { t, getDirection } from "@/lib/translations"
+import { LanguageSwitcher } from "@/components/LanguageSwitcher"
 
-const menuItems = [
-  { title: "الرئيسية", href: "/dashboard", icon: Home },
-  { title: "ماسح الباركود", href: "/dashboard/scanner", icon: ScanBarcode },
-  { title: "التغذية", href: "/dashboard/nutrition", icon: Salad },
-  { title: "الوصفات", href: "/dashboard/recipes", icon: UtensilsCrossed },
-  { title: "النصائح", href: "/dashboard/tips", icon: BookOpen },
-  { title: "الرياضة", href: "/dashboard/sport", icon: Dumbbell },
-  { title: "الصحة النفسية", href: "/dashboard/mental", icon: Brain },
-  { title: "العيادات", href: "/dashboard/clinics", icon: Stethoscope },
-  { title: "الخريطة", href: "/dashboard/maps", icon: MapPin },
-  { title: "الأبحاث", href: "/dashboard/research", icon: FlaskConical },
-  { title: "الشركاء", href: "/dashboard/partners", icon: Handshake },
-  { title: "تواصل معنا", href: "/dashboard/contact", icon: Phone },
-  { title: "عن التطبيق", href: "/dashboard/about", icon: Info },
+// Menu items with translation keys
+const menuItemsConfig = [
+  { key: "home", href: "/dashboard", icon: Home },
+  { key: "scanner", href: "/dashboard/scanner", icon: ScanBarcode },
+  { key: "nutrition", href: "/dashboard/nutrition", icon: Salad },
+  { key: "recipes", href: "/dashboard/recipes", icon: UtensilsCrossed },
+  { key: "tips", href: "/dashboard/tips", icon: BookOpen },
+  { key: "sport", href: "/dashboard/sport", icon: Dumbbell },
+  { key: "mental", href: "/dashboard/mental", icon: Brain },
+  { key: "clinics", href: "/dashboard/clinics", icon: Stethoscope },
+  { key: "maps", href: "/dashboard/maps", icon: MapPin },
+  { key: "research", href: "/dashboard/research", icon: FlaskConical },
+  { key: "partners", href: "/dashboard/partners", icon: Handshake },
+  { key: "prescription", href: "/dashboard/prescription", icon: FileText },
+  { key: "contact", href: "/dashboard/contact", icon: Phone },
+  { key: "about", href: "/dashboard/about", icon: Info },
 ]
 
 function AppSidebar() {
@@ -66,14 +71,18 @@ function AppSidebar() {
   const router = useRouter()
   const { user, logout } = useAuthStore()
   const { theme, setTheme } = useTheme()
+  const { language } = useLanguageStore()
 
   const handleLogout = () => {
     logout()
     router.push("/")
   }
 
+  // Set sidebar side based on language direction
+  const sidebarSide = language === 'ar' ? 'right' : 'left'
+
   return (
-    <Sidebar side="right" collapsible="icon">
+    <Sidebar side={sidebarSide} collapsible="icon">
       <SidebarHeader className="p-4">
         <Link href="/dashboard" className="flex items-center gap-3">
           <motion.div
@@ -83,7 +92,7 @@ function AppSidebar() {
               background: "linear-gradient(135deg, oklch(0.55 0.2 145) 0%, oklch(0.45 0.18 145) 100%)"
             }}
           >
-            <Image src="/Logo.png" alt="CILIAC" width={40} height={40} className="rounded-full" />
+            <Image src="/favicon.ico" alt="Logo" width={128} height={128} className="rounded-full" />
           </motion.div>
           <span className="text-xl font-bold group-data-[collapsible=icon]:hidden">CILIAC</span>
         </Link>
@@ -94,18 +103,19 @@ function AppSidebar() {
       <SidebarContent className="p-2">
         <SidebarGroup>
           <SidebarGroupLabel className="text-xs text-muted-foreground px-2">
-            القائمة الرئيسية
+            {language === 'ar' ? 'القائمة الرئيسية' : language === 'fr' ? 'Menu principal' : 'Main Menu'}
           </SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
-              {menuItems.map((item) => {
+              {menuItemsConfig.map((item) => {
                 const isActive = pathname === item.href
+                const title = t(`nav.${item.key}`, language)
                 return (
                   <SidebarMenuItem key={item.href}>
                     <SidebarMenuButton
                       asChild
                       isActive={isActive}
-                      tooltip={item.title}
+                      tooltip={title}
                       className={`transition-all duration-200 ${
                         isActive 
                           ? "bg-primary text-primary-foreground hover:bg-primary/90" 
@@ -114,7 +124,7 @@ function AppSidebar() {
                     >
                       <Link href={item.href} className="flex items-center gap-3">
                         <item.icon className="w-5 h-5 shrink-0" />
-                        <span className="group-data-[collapsible=icon]:hidden">{item.title}</span>
+                        <span className="group-data-[collapsible=icon]:hidden">{title}</span>
                         {isActive && (
                           <ChevronRight className="w-4 h-4 mr-auto group-data-[collapsible=icon]:hidden" />
                         )}
@@ -144,7 +154,7 @@ function AppSidebar() {
             <Moon className="w-5 h-5" />
           )}
           <span className="group-data-[collapsible=icon]:hidden">
-            {theme === "dark" ? "الوضع الفاتح" : "الوضع الداكن"}
+            {theme === "dark" ? t('common.lightMode', language) : t('common.darkMode', language)}
           </span>
         </Button>
 
@@ -157,7 +167,7 @@ function AppSidebar() {
             </AvatarFallback>
           </Avatar>
           <div className="flex-1 group-data-[collapsible=icon]:hidden">
-            <p className="text-sm font-medium">{user?.name || "مستخدم"}</p>
+            <p className="text-sm font-medium">{user?.name || (language === 'ar' ? 'مستخدم' : language === 'fr' ? 'Utilisateur' : 'User')}</p>
             <p className="text-xs text-muted-foreground truncate">{user?.email}</p>
           </div>
         </div>
@@ -170,7 +180,7 @@ function AppSidebar() {
           className="w-full justify-start gap-3"
         >
           <LogOut className="w-5 h-5" />
-          <span className="group-data-[collapsible=icon]:hidden">تسجيل الخروج</span>
+          <span className="group-data-[collapsible=icon]:hidden">{t('auth.logout', language)}</span>
         </Button>
       </SidebarFooter>
     </Sidebar>
@@ -183,7 +193,9 @@ export default function DashboardLayout({
   children: React.ReactNode
 }) {
   const { isAuthenticated } = useAuthStore()
+  const { language } = useLanguageStore()
   const router = useRouter()
+  const direction = getDirection(language)
 
   useEffect(() => {
     if (!isAuthenticated) {
@@ -197,12 +209,13 @@ export default function DashboardLayout({
 
   return (
     <SidebarProvider>
-      <div className="min-h-screen flex w-full" dir="rtl">
+      <div className="min-h-screen flex w-full" dir={direction}>
         <AppSidebar />
         <main className="flex-1 flex flex-col min-h-screen">
           <header className="sticky top-0 z-40 flex h-16 items-center gap-4 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 px-6">
             <SidebarTrigger />
             <div className="flex-1" />
+            <LanguageSwitcher />
           </header>
           <div className="flex-1 p-6">
             <motion.div

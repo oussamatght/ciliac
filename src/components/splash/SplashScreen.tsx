@@ -136,7 +136,7 @@ export function SplashScreen({ onComplete }: SplashScreenProps) {
                 animate={{ opacity: stage >= 1 ? 1 : 0, y: stage >= 1 ? 0 : 20 }}
                 transition={{ delay: 0.3, duration: 0.5 }}
               >
-                <Image src="/Logo.png" alt="CILIAC Logo" width={126} height={126} className="text-white rounded-full" />
+                <Image src="/favicon.ico" alt="Logo" width={128} height={128} className="rounded-full" />
               </motion.div>
             </motion.div>
           </motion.div>

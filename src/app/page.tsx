@@ -82,7 +82,7 @@ export default function Home() {
               className="flex items-center gap-3"
             >
               <div className="w-12 h-12 rounded-full flex items-center justify-center overflow-hidden bg-gradient-to-br from-[oklch(0.55_0.2_145)] to-[oklch(0.45_0.18_145)]">
-                <Image src="/Logo.png" alt="CILIAC" width={48} height={48} className="rounded-full" />
+                <Image src="/favicon.ico" alt="Logo" width={128} height={128} className="rounded-full" />
               </div>
               <span className="text-2xl font-bold text-white">CILIAC</span>
             </motion.div>

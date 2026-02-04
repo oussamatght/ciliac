@@ -85,7 +85,7 @@ export default function AboutPage() {
               className="w-24 h-24 rounded-full mx-auto mb-6 flex items-center justify-center"
               style={{ background: "rgba(255,255,255,0.2)" }}
             >
-              <Image src="/logo.png" alt="CILIAC Logo" width={128} height={128} className="rounded-full" />
+              <Image src="/favicon.ico" alt="Logo" width={128} height={128} className="rounded-full" />
             </motion.div>
             <h2 className="text-3xl font-bold mb-4">CILIAC</h2>
             <p className="text-xl text-white/90 max-w-2xl mx-auto">

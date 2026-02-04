@@ -1,5 +1,6 @@
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
+import { Language } from './translations'
 
 interface User {
   id: string
@@ -15,6 +16,24 @@ interface AuthState {
   register: (name: string, email: string, password: string) => Promise<boolean>
   logout: () => void
 }
+
+// Language Store
+interface LanguageState {
+  language: Language
+  setLanguage: (lang: Language) => void
+}
+
+export const useLanguageStore = create<LanguageState>()(
+  persist(
+    (set) => ({
+      language: 'ar',
+      setLanguage: (lang: Language) => set({ language: lang })
+    }),
+    {
+      name: 'ciliac-language'
+    }
+  )
+)
 
 export const useAuthStore = create<AuthState>()(
   persist(

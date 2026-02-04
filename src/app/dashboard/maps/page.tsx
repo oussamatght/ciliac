@@ -1,6 +1,6 @@
 "use client"
 
-import React, { useState } from "react"
+import React, { useState, useEffect } from "react"
 import { motion } from "framer-motion"
 import { Card, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
@@ -222,6 +222,11 @@ interface Location {
 export default function MapsPage() {
   const [selectedLocation, setSelectedLocation] = useState(null as Location | null)
   const [filter, setFilter] = useState("all")
+  const [isClient, setIsClient] = useState(false)
+
+  useEffect(() => {
+    setIsClient(true)
+  }, [])
 
   const filteredLocations = filter === "all"
     ? locations 
