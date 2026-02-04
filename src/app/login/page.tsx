@@ -8,11 +8,17 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { useAuthStore } from "@/lib/store"
+import { useAuthStore, useLanguageStore } from "@/lib/store"
+import { translations } from "@/lib/translations"
+import { LanguageSwitcher } from "@/components/LanguageSwitcher"
+import Image from "next/image"
 
 export default function LoginPage() {
   const router = useRouter()
   const { login, register } = useAuthStore()
+  const { language } = useLanguageStore()
+  const t = translations.login[language]
+  const isRtl = language === 'ar'
   const [isLogin, setIsLogin] = useState(true)
   const [showPassword, setShowPassword] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
@@ -45,7 +51,12 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="min-h-screen relative overflow-hidden flex items-center justify-center p-4" dir="rtl">
+    <div className="min-h-screen relative overflow-hidden flex items-center justify-center p-4" dir={isRtl ? "rtl" : "ltr"}>
+      {/* Language Switcher */}
+      <div className="absolute top-4 right-4 z-50">
+        <LanguageSwitcher variant="dropdown" />
+      </div>
+
       {/* Animated background */}
       <div 
         className="absolute inset-0 z-0"
@@ -103,18 +114,15 @@ export default function LoginPage() {
                   background: "linear-gradient(135deg, oklch(0.55 0.2 145) 0%, oklch(0.45 0.18 145) 100%)"
                 }}
               >
-                <Wheat className="w-10 h-10 text-white" />
+                <Image src="/logo.png" alt="Logo" width={128} height={128} className="text-white rounded-full" />
               </div>
             </motion.div>
             
             <CardTitle className="text-3xl font-bold text-white">
-              {isLogin ? "مرحباً بعودتك" : "إنشاء حساب جديد"}
+              {isLogin ? t.welcomeBack : t.createAccount}
             </CardTitle>
             <CardDescription className="text-white/70">
-              {isLogin 
-                ? "سجل دخولك للوصول إلى دليلك الشامل" 
-                : "انضم إلينا لحياة صحية خالية من الغلوتين"
-              }
+              {isLogin ? t.loginSubtitle : t.registerSubtitle}
             </CardDescription>
           </CardHeader>
           
@@ -129,16 +137,16 @@ export default function LoginPage() {
                     transition={{ duration: 0.3 }}
                   >
                     <div className="space-y-2">
-                      <Label htmlFor="name" className="text-white/90">الاسم الكامل</Label>
+                      <Label htmlFor="name" className="text-white/90">{t.fullName}</Label>
                       <div className="relative">
-                        <User className="absolute right-3 top-1/2 -translate-y-1/2 w-5 h-5 text-white/50" />
+                        <User className={`absolute ${isRtl ? 'right-3' : 'left-3'} top-1/2 -translate-y-1/2 w-5 h-5 text-white/50`} />
                         <Input
                           id="name"
                           type="text"
-                          placeholder="أدخل اسمك"
+                          placeholder={t.namePlaceholder}
                           value={formData.name}
                           onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                          className="pr-10 bg-white/10 border-white/20 text-white placeholder:text-white/40 focus:border-accent"
+                          className={`${isRtl ? 'pr-10' : 'pl-10'} bg-white/10 border-white/20 text-white placeholder:text-white/40 focus:border-accent`}
                         />
                       </div>
                     </div>
@@ -147,38 +155,38 @@ export default function LoginPage() {
               </AnimatePresence>
 
               <div className="space-y-2">
-                <Label htmlFor="email" className="text-white/90">البريد الإلكتروني</Label>
+                <Label htmlFor="email" className="text-white/90">{t.email}</Label>
                 <div className="relative">
-                  <Mail className="absolute right-3 top-1/2 -translate-y-1/2 w-5 h-5 text-white/50" />
+                  <Mail className={`absolute ${isRtl ? 'right-3' : 'left-3'} top-1/2 -translate-y-1/2 w-5 h-5 text-white/50`} />
                   <Input
                     id="email"
                     type="email"
-                    placeholder="example@email.com"
+                    placeholder={t.emailPlaceholder}
                     value={formData.email}
                     onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                    className="pr-10 bg-white/10 border-white/20 text-white placeholder:text-white/40 focus:border-accent"
+                    className={`${isRtl ? 'pr-10' : 'pl-10'} bg-white/10 border-white/20 text-white placeholder:text-white/40 focus:border-accent`}
                     dir="ltr"
                   />
                 </div>
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="password" className="text-white/90">كلمة المرور</Label>
+                <Label htmlFor="password" className="text-white/90">{t.password}</Label>
                 <div className="relative">
-                  <Lock className="absolute right-3 top-1/2 -translate-y-1/2 w-5 h-5 text-white/50" />
+                  <Lock className={`absolute ${isRtl ? 'right-3' : 'left-3'} top-1/2 -translate-y-1/2 w-5 h-5 text-white/50`} />
                   <Input
                     id="password"
                     type={showPassword ? "text" : "password"}
                     placeholder="••••••••"
                     value={formData.password}
                     onChange={(e) => setFormData({ ...formData, password: e.target.value })}
-                    className="pr-10 pl-10 bg-white/10 border-white/20 text-white placeholder:text-white/40 focus:border-accent"
+                    className={`${isRtl ? 'pr-10 pl-10' : 'pl-10 pr-10'} bg-white/10 border-white/20 text-white placeholder:text-white/40 focus:border-accent`}
                     dir="ltr"
                   />
                   <button
                     type="button"
                     onClick={() => setShowPassword(!showPassword)}
-                    className="absolute left-3 top-1/2 -translate-y-1/2 text-white/50 hover:text-white/80 transition-colors"
+                    className={`absolute ${isRtl ? 'left-3' : 'right-3'} top-1/2 -translate-y-1/2 text-white/50 hover:text-white/80 transition-colors`}
                   >
                     {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
                   </button>
@@ -202,8 +210,8 @@ export default function LoginPage() {
                   </motion.div>
                 ) : (
                   <>
-                    {isLogin ? "تسجيل الدخول" : "إنشاء الحساب"}
-                    <ArrowRight className="mr-2 w-5 h-5" />
+                    {isLogin ? t.loginButton : t.registerButton}
+                    <ArrowRight className={`${isRtl ? 'mr-2' : 'ml-2'} w-5 h-5`} />
                   </>
                 )}
               </Button>
@@ -216,9 +224,9 @@ export default function LoginPage() {
                 className="text-white/70 hover:text-white transition-colors"
               >
                 {isLogin ? (
-                  <>ليس لديك حساب؟ <span className="text-accent font-semibold">سجل الآن</span></>
+                  <>{t.noAccount} <span className="text-accent font-semibold">{t.registerNow}</span></>
                 ) : (
-                  <>لديك حساب بالفعل؟ <span className="text-accent font-semibold">سجل دخولك</span></>
+                  <>{t.haveAccount} <span className="text-accent font-semibold">{t.loginNow}</span></>
                 )}
               </button>
             </div>

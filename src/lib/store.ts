@@ -81,3 +81,23 @@ export const useSplashStore = create<SplashState>()(
     }
   )
 )
+
+// Language Store for multi-language support
+export type Language = 'ar' | 'fr' | 'en'
+
+interface LanguageState {
+  language: Language
+  setLanguage: (lang: Language) => void
+}
+
+export const useLanguageStore = create<LanguageState>()(
+  persist(
+    (set) => ({
+      language: 'ar',
+      setLanguage: (lang: Language) => set({ language: lang })
+    }),
+    {
+      name: 'ciliac-language'
+    }
+  )
+)
