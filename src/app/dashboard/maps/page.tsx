@@ -225,7 +225,10 @@ export default function MapsPage() {
   const [isClient, setIsClient] = useState(false)
 
   useEffect(() => {
+    setTimeout(() => {
     setIsClient(true)
+      
+    }, 0);
   }, [])
 
   const filteredLocations = filter === "all"
