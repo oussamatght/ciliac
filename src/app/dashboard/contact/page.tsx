@@ -27,7 +27,7 @@ const contactInfo = [
   {
     icon: Mail,
     title: "البريد الإلكتروني",
-    value: "contact@ciliac-dz.com",
+    value: "glutenfrecilaic.dz@gmail.com",
     description: "نرد خلال 24 ساعة",
     link: "mailto:contact@ciliac-dz.com"
   },
