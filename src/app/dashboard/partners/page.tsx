@@ -11,80 +11,48 @@ import {
   MapPin,
   Globe
 } from "lucide-react"
+import { img } from "framer-motion/client"
+import Image from 'next/image';
 
 const partners = [
   {
-    name: "Maison Goussem Gluten Free",
-    type: "متجر متخصص",
-    description: "متجر متخصص في المنتجات الخالية من الغلوتين في الجزائر العاصمة، يوفر تشكيلة واسعة من المنتجات المستوردة والمحلية.",
+    name: "Reginat",
+    type: "شركة ",
+    description: 
+    "شركة رائدة في مجال المنتجات الغذائية الخالية من الغلوتين، تقدم مجموعة واسعة من الحلول الصحية لمرضى السيلياك.",
     location: "Béni Messous, الجزائر",
-    website: "https://www.facebook.com/Maison-Goussem-Gluten-Free-102886828683687/",
-    services: ["منتجات غذائية", "دقيق خالي من الغلوتين", "حلويات", "خبز"]
+    website: "https://www.reginat-dietetique.com/",
+    services: ["منتجات غذائية", "دقيق خالي من الغلوتين", "حلويات", "خبز"],
   },
   {
-    name: "Délices sans Gluten El-Bahdja",
-    type: "مخبزة متخصصة",
-    description: "مخبزة متخصصة في إنتاج الخبز والحلويات الخالية من الغلوتين بجودة عالية.",
+    name: "restaurant chez petit",
+    type: "مطعم ",
+    description: "مطعم متخصص في تقديم الأطعمة الخالية من الغلوتين بجودة عالية.",
     location: "الجزائر العاصمة",
-    website: "https://www.facebook.com/Elbahdjasansgluten/",
-    services: ["خبز طازج", "حلويات", "كعك المناسبات", "توصيل"]
+    website: "https://www.tiktok.com/@chezpetitglutenfree?is_from_webapp=1&sender_device=pc",
+    services: ["خبز طازج", "حلويات", "كعك المناسبات", "توصيل"],
   },
   {
-    name: "Vie Sans Gluten",
+    name: "Clinique El Bordj",
     type: "متجر متخصص",
-    description: "متجر رائد في مجال المنتجات الخالية من الغلوتين، يوفر استشارات غذائية للمرضى.",
+    description: "عيادة متخصصة في أمراض الجهاز الهضمي، ترافق مرضى السيلياك في رحلتهم نحو حياة صحية ومتوازنة.",
     location: "شارع العقيد عميروش، الجزائر",
-    website: "https://www.facebook.com/viesansgluten1/",
-    services: ["منتجات متنوعة", "استشارات", "توصيل", "طلبات خاصة"]
+    website: "https://www.facebook.com/clinique.elbordj/",
+    services: ["منتجات متنوعة", "استشارات", "توصيل", "طلبات خاصة"],
+    img:"/partner3.jpg"
   },
-  {
-    name: "Gluten Free Diet",
-    type: "متجر متخصص",
-    description: "متجر متخصص في المنتجات الصحية والخالية من الغلوتين في باب الحسن.",
-    location: "Baba Hassen, الجزائر",
-    website: "https://www.facebook.com/glutenfreediet0",
-    services: ["منتجات خالية من الغلوتين", "أغذية صحية", "مكملات"]
-  },
+
   {
     name: "Benna sans gluten",
-    type: "مخبزة متخصصة",
-    description: "مخبزة عائلية متخصصة في إنتاج المخبوزات الخالية من الغلوتين بوصفات تقليدية.",
-    location: "دراريا، الجزائر",
-    website: "https://www.facebook.com/Benna-sans-gluten-103005454792908/",
-    services: ["خبز تقليدي", "معجنات", "حلويات جزائرية"]
+    type: "عجائن المدلل",
+    description: " متجر متخصص في بيع المنتجات الخالية من الغلوتين، يقدم مجموعة متنوعة من الحلويات والمعجنات التقليدية الجزائرية المعدة خصيصاً لمرضى السيلياك.",
+    location: " الجزائر",
+    website: "https://www.facebook.com/Tibeche/posts/%D9%85%D9%86%D8%AA%D9%88%D8%AC%D8%A7%D8%AA-%D8%A7%D9%84%D9%85%D8%AF%D9%84%D9%84-%D9%87%D8%B6%D8%A7%D8%A8%D9%81%D8%B1%D9%8A%D9%86%D8%A9-%D8%B9%D8%AC%D8%A7%D8%A6%D9%86-%D8%AF%D9%82%D9%8A%D9%82-%D9%85%D8%AA%D9%88%D9%81%D8%B1-%D8%A7%D9%84%D8%A7%D9%86-%D9%81%D9%8A-%D9%85%D8%AD%D9%84-ma-vie-sans-gluten/906058820843768/,",
+    services: ["خبز تقليدي", "معجنات", "حلويات جزائرية"],
+    img:"/Remove-bg.ai_1751795712690.webp"
+  
   },
-  {
-    name: "S&R sans gluten",
-    type: "متجر متخصص",
-    description: "متجر يوفر مجموعة واسعة من المنتجات الخالية من الغلوتين مع خدمة توصيل.",
-    location: "بوزريعة، الجزائر",
-    website: "https://www.facebook.com/SandRsansgluten/",
-    services: ["منتجات متنوعة", "توصيل", "طلبات بالجملة"]
-  },
-  {
-    name: "Dar elkarim",
-    type: "مخبزة متخصصة",
-    description: "دار الكريم متخصصة في إنتاج الخبز والمعجنات الخالية من الغلوتين.",
-    location: "أولاد فايت، الجزائر",
-    website: "https://www.facebook.com/darelkarim1/",
-    services: ["خبز يومي", "معجنات", "حلويات المناسبات"]
-  },
-  {
-    name: "Corail Rouge Market",
-    type: "سوبرماركت",
-    description: "سوبرماركت كبير يوفر قسماً خاصاً بالمنتجات الخالية من الغلوتين في تلمسان.",
-    location: "مغنية، تلمسان",
-    website: "https://corailmarket.com/",
-    services: ["قسم خاص", "منتجات متنوعة", "أسعار تنافسية"]
-  },
-  {
-    name: "Magasin Habibou sans gluten",
-    type: "متجر متخصص",
-    description: "متجر حبيبو متخصص في المنتجات الخالية من الغلوتين مع توفير منتجات نادرة.",
-    location: "برج البحري، الجزائر",
-    website: "https://www.facebook.com/Habibou-Gluten-free-827559634088059/",
-    services: ["منتجات نادرة", "استيراد خاص", "توصيل"]
-  }
+
 ]
 
 const benefits = [
@@ -155,8 +123,8 @@ export default function PartnersPage() {
             <Card className="h-full hover:shadow-lg transition-shadow">
               <CardHeader>
                 <div className="flex items-start justify-between">
-                  <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center">
-                    <Building2 className="w-6 h-6 text-primary" />
+                  <div className="w-20 h-20 rounded-full bg-primary/10 flex items-center justify-center">
+                    <Image src={partner.img} alt={partner.name} width={150} height={150} className="rounded-full" />
                   </div>
                   <Badge variant="secondary">{partner.type}</Badge>
                 </div>

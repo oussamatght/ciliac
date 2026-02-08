@@ -47,7 +47,10 @@ import { useTheme } from "next-themes"
 import { useEffect } from "react"
 import { t, getDirection } from "@/lib/translations"
 import { LanguageSwitcher } from "@/components/LanguageSwitcher"
-
+const metadata = {
+  title: "Dashboard",
+  description: "Your personalized celiac disease management dashboard.",
+}
 // Menu items with translation keys
 const menuItemsConfig = [
   { key: "home", href: "/dashboard", icon: Home },
