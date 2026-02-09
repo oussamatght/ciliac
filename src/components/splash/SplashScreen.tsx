@@ -3,6 +3,8 @@
 import { motion, AnimatePresence } from "framer-motion"
 import { useEffect, useState } from "react"
 import Image from "next/image"
+import { useLanguageStore } from "@/lib/store"
+import { t } from "@/lib/translations"
 
 interface SplashScreenProps {
   onComplete: () => void
@@ -23,6 +25,7 @@ const particles = generateParticles()
 
 export function SplashScreen({ onComplete }: SplashScreenProps) {
   const [stage, setStage] = useState(0)
+  const { language } = useLanguageStore()
 
   useEffect(() => {
     const timers = [
@@ -102,7 +105,7 @@ export function SplashScreen({ onComplete }: SplashScreenProps) {
             {/* Outer ring */}
             <motion.div
               className="absolute -inset-4 rounded-full border-4 border-dashed"
-              style={{ borderColor: "oklch(0.65 0.15 80 / 0.5)" }}
+              style={{ borderColor: "oklch(0.55 0.15 220)" }}
               animate={{ rotate: 360 }}
               transition={{ duration: 10, repeat: Infinity, ease: "linear" }}
             />
@@ -123,9 +126,9 @@ export function SplashScreen({ onComplete }: SplashScreenProps) {
               }}
               animate={{
                 boxShadow: [
-                  "0 0 30px oklch(0.65 0.15 80 / 0.4)",
-                  "0 0 60px oklch(0.65 0.15 80 / 0.6)",
-                  "0 0 30px oklch(0.65 0.15 80 / 0.4)",
+                  "0 0 30px green",
+                  "0 0 60px green",
+                  "0 0 30px  green",
                 ]
               }}
               transition={{ duration: 2, repeat: Infinity }}
@@ -153,13 +156,13 @@ export function SplashScreen({ onComplete }: SplashScreenProps) {
           >
             <motion.h1
               className="text-5xl font-bold text-white tracking-wider"
-              style={{ textShadow: "0 0 30px oklch(0.65 0.15 80 / 0.5)" }}
+              style={{ textShadow: "0 0 30px oklch(0.55 0.15 220)" }}
             >
-              CILIAC
+              CILIAC 
             </motion.h1>
             <motion.div
               className="h-1 rounded-full mt-3"
-              style={{ background: "linear-gradient(90deg, transparent, oklch(0.65 0.15 80), transparent)" }}
+              style={{ background: "linear-gradient(90deg, transparent, oklch(0.55 0.15 220), transparent)" }}
               initial={{ width: 0 }}
               animate={{ width: stage >= 2 ? 200 : 0 }}
               transition={{ delay: 0.3, duration: 0.8 }}
@@ -173,7 +176,7 @@ export function SplashScreen({ onComplete }: SplashScreenProps) {
             animate={{ opacity: stage >= 3 ? 1 : 0 }}
             transition={{ duration: 0.5 }}
           >
-            دليلك الشامل لحياة خالية من الغلوتين
+            {t('splash.tagline', language)}
           </motion.p>
 
           {/* Loading dots */}
@@ -186,7 +189,7 @@ export function SplashScreen({ onComplete }: SplashScreenProps) {
               <motion.div
                 key={i}
                 className="w-3 h-3 rounded-full"
-                style={{ background: "oklch(0.65 0.15 80)" }}
+                style={{ background: "oklch(0.55 0.15 220)" }}
                 animate={{
                   scale: [1, 1.5, 1],
                   opacity: [0.5, 1, 0.5],

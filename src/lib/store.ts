@@ -1,6 +1,6 @@
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
-import { Language } from './translations'
+import { Language } from './translations';
 
 interface User {
   id: string

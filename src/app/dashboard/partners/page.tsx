@@ -11,58 +11,60 @@ import {
   MapPin,
   Globe
 } from "lucide-react"
-import { img } from "framer-motion/client"
-import Image from 'next/image';
+import Image from 'next/image'
+import { useLanguageStore } from "@/lib/store"
+import { t, getDirection, type Language } from "@/lib/translations"
 
-const partners = [
+const getPartners = (lang: Language) => [
   {
     name: "Reginat",
-    type: "شركة ",
-    description: 
-    "شركة رائدة في مجال المنتجات الغذائية الخالية من الغلوتين، تقدم مجموعة واسعة من الحلول الصحية لمرضى السيلياك.",
-    location: "Béni Messous, الجزائر",
+    type: lang === 'ar' ? 'شركة' : lang === 'fr' ? 'Entreprise' : 'Company',
+    description: lang === 'ar' ? 'شركة رائدة في مجال المنتجات الغذائية الخالية من الغلوتين، تقدم مجموعة واسعة من الحلول الصحية.' : lang === 'fr' ? 'Entreprise leader dans les produits alimentaires sans gluten, offrant une large gamme de solutions santé.' : 'Leading company in gluten-free food products, offering a wide range of healthy solutions.',
+    location: "Béni Messous, Algérie",
     website: "https://www.reginat-dietetique.com/",
-    services: ["منتجات غذائية", "دقيق خالي من الغلوتين", "حلويات", "خبز"],
+    services: lang === 'ar' ? ['منتجات غذائية', 'دقيق خالي من الغلوتين', 'حلويات', 'خبز'] : lang === 'fr' ? ['Produits alimentaires', 'Farine sans gluten', 'Pâtisseries', 'Pain'] : ['Food products', 'Gluten-free flour', 'Pastries', 'Bread'],
+    img: null,
   },
   {
-    name: "restaurant chez petit",
-    type: "مطعم ",
-    description: "مطعم متخصص في تقديم الأطعمة الخالية من الغلوتين بجودة عالية.",
-    location: "الجزائر العاصمة",
+    name: "Restaurant Chez Petit",
+    type: lang === 'ar' ? 'مطعم' : 'Restaurant',
+    description: lang === 'ar' ? 'مطعم متخصص في تقديم الأطعمة الخالية من الغلوتين بجودة عالية.' : lang === 'fr' ? 'Restaurant spécialisé dans les plats sans gluten de haute qualité.' : 'Restaurant specializing in high-quality gluten-free food.',
+    location: lang === 'ar' ? 'الجزائر العاصمة' : 'Alger',
     website: "https://www.tiktok.com/@chezpetitglutenfree?is_from_webapp=1&sender_device=pc",
-    services: ["خبز طازج", "حلويات", "كعك المناسبات", "توصيل"],
+    services: lang === 'ar' ? ['خبز طازج', 'حلويات', 'كعك المناسبات', 'توصيل'] : lang === 'fr' ? ['Pain frais', 'Pâtisseries', 'Gâteaux', 'Livraison'] : ['Fresh bread', 'Pastries', 'Event cakes', 'Delivery'],
+    img: null,
   },
   {
     name: "Clinique El Bordj",
-    type: "متجر متخصص",
-    description: "عيادة متخصصة في أمراض الجهاز الهضمي، ترافق مرضى السيلياك في رحلتهم نحو حياة صحية ومتوازنة.",
-    location: "شارع العقيد عميروش، الجزائر",
+    type: lang === 'ar' ? 'عيادة متخصصة' : lang === 'fr' ? 'Clinique spécialisée' : 'Specialized Clinic',
+    description: lang === 'ar' ? 'عيادة متخصصة في أمراض الجهاز الهضمي، ترافق المرضى في رحلتهم نحو حياة صحية ومتوازنة.' : lang === 'fr' ? 'Clinique spécialisée en gastro-entérologie, accompagnant les patients vers une vie saine et équilibrée.' : 'Clinic specialized in gastroenterology, supporting patients toward a healthy and balanced life.',
+    location: lang === 'ar' ? 'شارع العقيد عميروش، الجزائر' : 'Bd Colonel Amirouche, Alger',
     website: "https://www.facebook.com/clinique.elbordj/",
-    services: ["منتجات متنوعة", "استشارات", "توصيل", "طلبات خاصة"],
-    img:"/partner3.jpg"
+    services: lang === 'ar' ? ['منتجات متنوعة', 'استشارات', 'توصيل', 'طلبات خاصة'] : lang === 'fr' ? ['Produits variés', 'Consultations', 'Livraison', 'Commandes spéciales'] : ['Various products', 'Consultations', 'Delivery', 'Special orders'],
+    img: "/partner3.jpg",
   },
-
   {
-    name: "Benna sans gluten",
-    type: "عجائن المدلل",
-    description: " متجر متخصص في بيع المنتجات الخالية من الغلوتين، يقدم مجموعة متنوعة من الحلويات والمعجنات التقليدية الجزائرية المعدة خصيصاً لمرضى السيلياك.",
-    location: " الجزائر",
-    website: "https://www.facebook.com/Tibeche/posts/%D9%85%D9%86%D8%AA%D9%88%D8%AC%D8%A7%D8%AA-%D8%A7%D9%84%D9%85%D8%AF%D9%84%D9%84-%D9%87%D8%B6%D8%A7%D8%A8%D9%81%D8%B1%D9%8A%D9%86%D8%A9-%D8%B9%D8%AC%D8%A7%D8%A6%D9%86-%D8%AF%D9%82%D9%8A%D9%82-%D9%85%D8%AA%D9%88%D9%81%D8%B1-%D8%A7%D9%84%D8%A7%D9%86-%D9%81%D9%8A-%D9%85%D8%AD%D9%84-ma-vie-sans-gluten/906058820843768/,",
-    services: ["خبز تقليدي", "معجنات", "حلويات جزائرية"],
-    img:"/Remove-bg.ai_1751795712690.webp"
-  
+    name: "Benna Sans Gluten",
+    type: lang === 'ar' ? 'عجائن المدلل' : lang === 'fr' ? 'Pâtisserie spécialisée' : 'Specialty Bakery',
+    description: lang === 'ar' ? 'متجر متخصص في بيع المنتجات الخالية من الغلوتين، يقدم مجموعة متنوعة من الحلويات والمعجنات التقليدية الجزائرية.' : lang === 'fr' ? 'Boutique spécialisée dans les produits sans gluten, proposant des pâtisseries et gâteaux traditionnels algériens.' : 'Specialty store for gluten-free products, offering traditional Algerian pastries and sweets.',
+    location: lang === 'ar' ? 'الجزائر' : 'Algérie',
+    website: "https://www.facebook.com/Tibeche/",
+    services: lang === 'ar' ? ['خبز تقليدي', 'معجنات', 'حلويات جزائرية'] : lang === 'fr' ? ['Pain traditionnel', 'Pâtisseries', 'Gâteaux algériens'] : ['Traditional bread', 'Pastries', 'Algerian sweets'],
+    img: "/Remove-bg.ai_1751795712690.webp",
   },
-
 ]
 
-const benefits = [
-  "الوصول لمنتجات خالية من الغلوتين بأسعار مناسبة",
-  "خريطة تفاعلية لجميع نقاط البيع في الجزائر",
-  "تقييمات ومراجعات من مرضى السيلياك",
-  "إشعارات عند توفر منتجات جديدة"
+const getBenefits = (lang: Language) => [
+  lang === 'ar' ? 'الوصول لمنتجات خالية من الغلوتين بأسعار مناسبة' : lang === 'fr' ? 'Accès à des produits sans gluten à des prix abordables' : 'Access to gluten-free products at affordable prices',
+  lang === 'ar' ? 'خريطة تفاعلية لجميع نقاط البيع في الجزائر' : lang === 'fr' ? 'Carte interactive de tous les points de vente en Algérie' : 'Interactive map of all sales points in Algeria',
+  lang === 'ar' ? 'تقييمات ومراجعات من المرضى' : lang === 'fr' ? 'Évaluations et avis des patients' : 'Ratings and reviews from patients',
+  lang === 'ar' ? 'إشعارات عند توفر منتجات جديدة' : lang === 'fr' ? 'Notifications pour les nouveaux produits' : 'Notifications for new products',
 ]
 
 export default function PartnersPage() {
+  const { language } = useLanguageStore()
+  const dir = getDirection(language)
+
   return (
     <div className="space-y-8">
       {/* Header */}
@@ -75,8 +77,8 @@ export default function PartnersPage() {
             <Handshake className="w-6 h-6 text-primary" />
           </div>
           <div>
-            <h1 className="text-3xl font-bold">شركاؤنا</h1>
-            <p className="text-muted-foreground">المؤسسات والشركات الداعمة لمجتمع السيلياك</p>
+            <h1 className="text-3xl font-bold">{t('partners.title', language)}</h1>
+            <p className="text-muted-foreground">{t('partners.description', language)}</p>
           </div>
         </div>
       </motion.div>
@@ -89,12 +91,12 @@ export default function PartnersPage() {
       >
         <Card className="bg-gradient-to-br from-primary/5 to-accent/5 border-primary/20">
           <CardHeader>
-            <CardTitle>مزايا الشراكة</CardTitle>
-            <CardDescription>استفد من شبكة شركائنا</CardDescription>
+            <CardTitle>{t('partners.benefits', language)}</CardTitle>
+            <CardDescription>{t('partners.benefitsDesc', language)}</CardDescription>
           </CardHeader>
           <CardContent>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-              {benefits.map((benefit, index) => (
+              {getBenefits(language).map((benefit, index) => (
                 <motion.div
                   key={index}
                   initial={{ opacity: 0, x: -10 }}
@@ -113,7 +115,7 @@ export default function PartnersPage() {
 
       {/* Partners Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {partners.map((partner, index) => (
+        {getPartners(language).map((partner, index) => (
           <motion.div
             key={partner.name}
             initial={{ opacity: 0, y: 20 }}
@@ -123,8 +125,12 @@ export default function PartnersPage() {
             <Card className="h-full hover:shadow-lg transition-shadow">
               <CardHeader>
                 <div className="flex items-start justify-between">
-                  <div className="w-20 h-20 rounded-full bg-primary/10 flex items-center justify-center">
-                    <Image src={partner.img} alt={partner.name} width={150} height={150} className="rounded-full" />
+                  <div className="w-20 h-20 rounded-full bg-primary/10 flex items-center justify-center overflow-hidden">
+                    {partner.img ? (
+                      <Image src={partner.img} alt={partner.name} width={150} height={150} className="rounded-full object-cover w-full h-full" />
+                    ) : (
+                      <Building2 className="w-10 h-10 text-primary" />
+                    )}
                   </div>
                   <Badge variant="secondary">{partner.type}</Badge>
                 </div>
@@ -138,7 +144,7 @@ export default function PartnersPage() {
                 <p className="text-sm text-muted-foreground">{partner.description}</p>
                 
                 <div>
-                  <p className="text-sm font-medium mb-2">الخدمات:</p>
+                  <p className="text-sm font-medium mb-2">{t('partners.services', language)}</p>
                   <div className="flex flex-wrap gap-1">
                     {partner.services.map((service, i) => (
                       <Badge key={i} variant="outline" className="text-xs">
@@ -151,7 +157,7 @@ export default function PartnersPage() {
                 <Button variant="outline" className="w-full" size="sm" asChild>
                   <a href={partner.website} target="_blank" rel="noopener noreferrer">
                     <Globe className="w-4 h-4 ml-2" />
-                    زيارة الصفحة
+                    {t('partners.visitPage', language)}
                   </a>
                 </Button>
               </CardContent>
@@ -169,13 +175,13 @@ export default function PartnersPage() {
         <Card className="text-center">
           <CardContent className="p-8">
             <Handshake className="w-16 h-16 mx-auto text-primary mb-4" />
-            <h2 className="text-2xl font-bold mb-2">هل ترغب في الانضمام كشريك؟</h2>
+            <h2 className="text-2xl font-bold mb-2">{t('partners.becomePartner', language)}</h2>
             <p className="text-muted-foreground mb-6 max-w-md mx-auto">
-              إذا كنت تملك متجراً أو مخبزة توفر منتجات خالية من الغلوتين، تواصل معنا لإضافتك إلى قائمة شركائنا
+              {t('partners.becomePartnerDesc', language)}
             </p>
             <Button size="lg" asChild>
               <a href="https://wa.me/213783321319" target="_blank" rel="noopener noreferrer">
-                تواصل عبر واتساب
+                {t('partners.contactWhatsapp', language)}
                 <ExternalLink className="w-4 h-4 mr-2" />
               </a>
             </Button>

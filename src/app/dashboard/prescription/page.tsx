@@ -7,45 +7,33 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
+import { useLanguageStore } from "@/lib/store"
+import { t } from "@/lib/translations"
 
 export default function PrescriptionPage() {
+  const { language } = useLanguageStore()
   const [selectedFile, setSelectedFile] = useState<File | null>(null)
   const [previewUrl, setPreviewUrl] = useState<string | null>(null)
   const [notes, setNotes] = useState("")
   const [isUploading, setIsUploading] = useState(false)
+  const [submitted, setSubmitted] = useState(false)
 
   const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
     if (file) {
-      // Validate file type
       const validTypes = ['image/jpeg', 'image/png', 'image/jpg', 'application/pdf']
       if (!validTypes.includes(file.type)) {
-        toast({
-          title: "نوع ملف غير صالح",
-          description: "يرجى تحميل صورة (JPG, PNG) أو ملف PDF",
-          variant: "destructive"
-        })
+        alert(t('medicalFile.invalidFileType', language))
         return
       }
-
-      // Validate file size (5MB max)
       if (file.size > 5 * 1024 * 1024) {
-        toast({
-          title: "حجم الملف كبير جداً",
-          description: "يرجى تحميل ملف أقل من 5 ميجابايت",
-          variant: "destructive"
-        })
+        alert(t('medicalFile.fileTooLarge', language))
         return
       }
-
       setSelectedFile(file)
-      
-      // Create preview for images
       if (file.type.startsWith('image/')) {
         const reader = new FileReader()
-        reader.onloadend = () => {
-          setPreviewUrl(reader.result as string)
-        }
+        reader.onloadend = () => setPreviewUrl(reader.result as string)
         reader.readAsDataURL(file)
       } else {
         setPreviewUrl(null)
@@ -60,57 +48,50 @@ export default function PrescriptionPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    
     if (!selectedFile) {
-      toast({
-        title: "لم يتم تحديد ملف",
-        description: "يرجى تحميل وصفة طبية",
-        variant: "destructive"
-      })
+      alert(t('medicalFile.noFileSelected', language))
       return
     }
-
     setIsUploading(true)
-
     try {
-      // Simulate upload - replace with actual API call
       await new Promise(resolve => setTimeout(resolve, 2000))
-      
-      toast({
-        title: "تم الإرسال بنجاح",
-        description: "تم إرسال الوصفة الطبية. سيتم مراجعتها قريباً.",
-      })
-
-      // Reset form
+      setSubmitted(true)
       setSelectedFile(null)
       setPreviewUrl(null)
       setNotes("")
     } catch (error) {
-      toast({
-        title: "خطأ في الإرسال",
-        description: "حدث خطأ أثناء إرسال الوصفة. يرجى المحاولة مرة أخرى.",
-        variant: "destructive"
-      })
+      alert(t('medicalFile.errorDesc', language))
     } finally {
       setIsUploading(false)
     }
   }
 
+  if (submitted) {
+    return (
+      <div className="container mx-auto p-6 max-w-4xl">
+        <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} className="text-center py-16">
+          <Check className="w-20 h-20 mx-auto text-green-500 mb-6" />
+          <h2 className="text-3xl font-bold mb-3">{t('medicalFile.successTitle', language)}</h2>
+          <p className="text-muted-foreground mb-6 text-lg">{t('medicalFile.successDesc', language)}</p>
+          <Button onClick={() => setSubmitted(false)} size="lg">
+            {t('common.back', language)}
+          </Button>
+        </motion.div>
+      </div>
+    )
+  }
+
   return (
     <div className="container mx-auto p-6 max-w-4xl">
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5 }}
-      >
+      <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}>
         <Card className="border-2">
           <CardHeader>
             <CardTitle className="text-3xl flex items-center gap-3">
               <FileText className="w-8 h-8 text-primary" />
-              إرسال وصفة طبية
+              {t('medicalFile.title', language)}
             </CardTitle>
             <CardDescription className="text-lg">
-              قم بتحميل وصفة طبية من طبيبك للحصول على استشارة أو توصيات غذائية مخصصة
+              {t('medicalFile.description', language)}
             </CardDescription>
           </CardHeader>
 
@@ -119,9 +100,9 @@ export default function PrescriptionPage() {
               {/* File Upload Area */}
               <div className="space-y-2">
                 <Label htmlFor="prescription" className="text-lg">
-                  الوصفة الطبية *
+                  {t('medicalFile.uploadFile', language)}
                 </Label>
-                
+
                 {!selectedFile ? (
                   <div className="relative">
                     <input
@@ -131,13 +112,13 @@ export default function PrescriptionPage() {
                       onChange={handleFileSelect}
                       className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
                     />
-                    <div className="border-2 border-dashed border-gray-300 rounded-lg p-12 text-center hover:border-primary transition-colors cursor-pointer bg-gray-50">
+                    <div className="border-2 border-dashed border-gray-300 rounded-lg p-12 text-center hover:border-primary transition-colors cursor-pointer bg-gray-50 dark:bg-gray-900/30">
                       <Upload className="w-12 h-12 mx-auto mb-4 text-gray-400" />
-                      <p className="text-lg font-medium text-gray-700 mb-2">
-                        اضغط لتحميل الوصفة الطبية
+                      <p className="text-lg font-medium mb-2">
+                        {t('medicalFile.clickToUpload', language)}
                       </p>
-                      <p className="text-sm text-gray-500">
-                        صورة (JPG, PNG) أو PDF - حجم أقصى 5MB
+                      <p className="text-sm text-muted-foreground">
+                        {t('medicalFile.fileTypes', language)}
                       </p>
                     </div>
                   </div>
@@ -148,30 +129,18 @@ export default function PrescriptionPage() {
                         <Check className="w-6 h-6 text-green-600" />
                         <div>
                           <p className="font-medium text-lg">{selectedFile.name}</p>
-                          <p className="text-sm text-gray-500">
+                          <p className="text-sm text-muted-foreground">
                             {(selectedFile.size / 1024 / 1024).toFixed(2)} MB
                           </p>
                         </div>
                       </div>
-                      <Button
-                        type="button"
-                        variant="ghost"
-                        size="sm"
-                        onClick={handleRemoveFile}
-                        className="text-red-600 hover:text-red-700 hover:bg-red-50"
-                      >
+                      <Button type="button" variant="ghost" size="sm" onClick={handleRemoveFile} className="text-red-600 hover:text-red-700 hover:bg-red-50">
                         <X className="w-5 h-5" />
                       </Button>
                     </div>
-
-                    {/* Image Preview */}
                     {previewUrl && (
                       <div className="mt-4">
-                        <img
-                          src={previewUrl}
-                          alt="Preview"
-                          className="max-w-full h-auto rounded-lg border-2 border-gray-200"
-                        />
+                        <img src={previewUrl} alt="Preview" className="max-w-full h-auto rounded-lg border-2 border-gray-200" />
                       </div>
                     )}
                   </div>
@@ -181,51 +150,39 @@ export default function PrescriptionPage() {
               {/* Notes Area */}
               <div className="space-y-2">
                 <Label htmlFor="notes" className="text-lg">
-                  ملاحظات إضافية (اختياري)
+                  {t('medicalFile.additionalNotes', language)}
                 </Label>
                 <Textarea
                   id="notes"
                   value={notes}
                   onChange={(e) => setNotes(e.target.value)}
-                  placeholder="أضف أي ملاحظات أو استفسارات إضافية حول الوصفة..."
+                  placeholder={t('medicalFile.notesPlaceholder', language)}
                   className="min-h-32 text-base"
                 />
               </div>
 
               {/* Info Alert */}
-              <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 flex gap-3">
+              <div className="bg-blue-50 dark:bg-blue-950/30 border border-blue-200 dark:border-blue-900 rounded-lg p-4 flex gap-3">
                 <AlertCircle className="w-5 h-5 text-blue-600 shrink-0 mt-0.5" />
-                <div className="text-sm text-blue-900">
-                  <p className="font-medium mb-1">معلومة هامة</p>
-                  <p>
-                    سيتم مراجعة الوصفة الطبية من قبل فريقنا الطبي المختص. 
-                    سنتواصل معك خلال 24-48 ساعة للحصول على التوصيات المناسبة.
-                  </p>
+                <div className="text-sm text-blue-900 dark:text-blue-200">
+                  <p className="font-medium mb-1">{t('medicalFile.importantInfo', language)}</p>
+                  <p className="text-blue-700 dark:text-blue-300">{t('medicalFile.importantInfoDesc', language)}</p>
                 </div>
               </div>
 
               {/* Submit Button */}
-              <Button
-                type="submit"
-                size="lg"
-                className="w-full text-lg h-14"
-                disabled={!selectedFile || isUploading}
-              >
+              <Button type="submit" size="lg" className="w-full text-lg h-14" disabled={!selectedFile || isUploading}>
                 {isUploading ? (
                   <>
-                    <motion.div
-                      animate={{ rotate: 360 }}
-                      transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
-                      className="mr-2"
-                    >
+                    <motion.div animate={{ rotate: 360 }} transition={{ duration: 1, repeat: Infinity, ease: "linear" }} className="me-2">
                       <Upload className="w-5 h-5" />
                     </motion.div>
-                    جاري الإرسال...
+                    {t('medicalFile.submitting', language)}
                   </>
                 ) : (
                   <>
-                    <Upload className="w-5 h-5 ml-2" />
-                    إرسال الوصفة الطبية
+                    <Upload className="w-5 h-5 me-2" />
+                    {t('medicalFile.submit', language)}
                   </>
                 )}
               </Button>

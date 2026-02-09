@@ -72,7 +72,7 @@ export default function LoginPage() {
             style={{
               width: Math.random() * 100 + 50,
               height: Math.random() * 100 + 50,
-              background: `radial-gradient(circle, oklch(0.65 0.15 80 / ${Math.random() * 0.2}) 0%, transparent 70%)`,
+              background: `radial-gradient(circle, oklch(0.55 0.15 220 / ${Math.random() * 0.2}) 0%, transparent 70%)`,
               left: `${Math.random() * 100}%`,
               top: `${Math.random() * 100}%`,
             }}
@@ -199,7 +199,7 @@ export default function LoginPage() {
                 type="submit"
                 className="w-full h-12 text-lg font-semibold transition-all duration-300"
                 style={{
-                  background: "linear-gradient(135deg, oklch(0.65 0.15 80) 0%, oklch(0.55 0.18 80) 100%)"
+                  background: "linear-gradient(135deg, oklch(0.55 0.15 220) 0%, oklch(0.45 0.18 220) 100%)"
                 }}
                 disabled={isLoading}
               >
