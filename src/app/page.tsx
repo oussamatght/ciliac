@@ -58,7 +58,7 @@ export default function Home() {
               style={{
                 width: el.width,
                 height: el.height,
-                background: `radial-gradient(circle, oklch(0.65 0.15 80 / ${el.opacity}) 0%, transparent 70%)`,
+                background: `radial-gradient(circle, oklch(0.55 0.15 220 / ${el.opacity}) 0%, transparent 70%)`,
                 left: `${el.left}%`,
                 top: `${el.top}%`,
               }}
@@ -112,14 +112,14 @@ export default function Home() {
                 initial={{ scale: 0 }}
                 animate={{ scale: 1 }}
                 transition={{ delay: 0.3, type: "spring", stiffness: 200 }}
-                className="inline-flex items-center gap-2 px-4 py-2 rounded-full mb-6 bg-[oklch(0.65_0.15_80_/_0.2)]"
+                className="inline-flex items-center gap-2 px-4 py-2 rounded-full mb-6 bg-[oklch(0.55_0.15_220_/_0.2)]"
               >
-                <Sparkles className="w-4 h-4 text-amber-400" />
+                <Sparkles className="w-4 h-4 text-blue-400" />
                 <span className="text-white/90 text-sm">{t('appTagline', language)}</span>
               </motion.div>
 
               <h1 className="text-5xl md:text-6xl font-bold text-white mb-6 leading-tight">
-                {t('splash.welcome', language)} <span className="text-[oklch(0.65_0.15_80)]">{t('appName', language)}</span>
+                {t('splash.welcome', language)} <span className="text-[oklch(0.55_0.15_220)]">{t('appName', language)}</span>
               </h1>
               
               <p className="text-xl text-white/80 mb-8 leading-relaxed">
@@ -132,7 +132,7 @@ export default function Home() {
                   size="lg"
                   className="h-14 px-8 text-lg font-semibold"
                   style={{
-                    background: "linear-gradient(135deg, oklch(0.65 0.15 80) 0%, oklch(0.55 0.18 80) 100%)"
+                    background: "linear-gradient(135deg, oklch(0.55 0.15 220) 0%, oklch(0.45 0.18 220) 100%)"
                   }}
                 >
                   {t('splash.getStarted', language)}
@@ -161,7 +161,7 @@ export default function Home() {
                 {
                   icon: BookOpen,
                   title: language === 'ar' ? 'وصفات متنوعة' : language === 'fr' ? 'Recettes variées' : 'Varied Recipes',
-                  description: language === 'ar' ? 'مئات الوصفات الخالية من الغلوتين' : language === 'fr' ? 'Des centaines de recettes sans gluten' : 'Hundreds of gluten-free recipes'
+                  description: language === 'ar' ? 'مئات الوصفات الصحية المناسبة للأمراض المزمنة' : language === 'fr' ? 'Des centaines de recettes adaptées aux maladies chroniques' : 'Hundreds of recipes suitable for chronic diseases'
                 },
                 {
                   icon: Heart,
@@ -171,7 +171,7 @@ export default function Home() {
                 {
                   icon: Shield,
                   title: language === 'ar' ? 'حياة آمنة' : language === 'fr' ? 'Vie sûre' : 'Safe Life',
-                  description: language === 'ar' ? 'دليل للتعامل مع السيلياك يومياً' : language === 'fr' ? 'Guide pour gérer la maladie cœliaque au quotidien' : 'Guide to managing celiac disease daily'
+                  description: language === 'ar' ? 'دليل للتعايش مع الأمراض المزمنة يومياً' : language === 'fr' ? 'Guide pour vivre avec les maladies chroniques au quotidien' : 'Guide to living with chronic diseases daily'
                 }
               ].map((feature, index) => (
                 <motion.div
@@ -181,7 +181,7 @@ export default function Home() {
                   transition={{ delay: 0.7 + index * 0.1 }}
                   className="p-6 rounded-2xl bg-white/5 backdrop-blur-sm border border-white/10 hover:bg-white/10 transition-colors"
                 >
-                  <feature.icon className="w-10 h-10 mb-4" style={{ color: "oklch(0.65 0.15 80)" }} />
+                  <feature.icon className="w-10 h-10 mb-4" style={{ color: "oklch(0.55 0.15 220)" }} />
                   <h3 className="text-xl font-semibold text-white mb-2">{feature.title}</h3>
                   <p className="text-white/60">{feature.description}</p>
                 </motion.div>

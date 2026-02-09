@@ -12,6 +12,8 @@ import {
   Users,
   Globe
 } from "lucide-react"
+import { useLanguageStore } from "@/lib/store"
+import { t, getDirection, type Language } from "@/lib/translations"
 
 // Real research data from research.html
 const researches = [
@@ -161,14 +163,17 @@ const researches = [
   }
 ]
 
-const statistics = [
-  { label: "نسبة الإصابة عالمياً", value: "1%", description: "من السكان" },
-  { label: "نسبة غير المشخصين", value: "83%", description: "من المصابين" },
-  { label: "متوسط وقت التشخيص", value: "6-10", description: "سنوات" },
-  { label: "تحسن الأعراض", value: "95%", description: "بعد الحمية" }
+const getStatistics = (lang: Language) => [
+  { label: lang === 'ar' ? 'نسبة الإصابة عالمياً' : lang === 'fr' ? 'Prévalence mondiale' : 'Global Prevalence', value: '1%', description: lang === 'ar' ? 'من السكان' : lang === 'fr' ? 'de la population' : 'of population' },
+  { label: lang === 'ar' ? 'نسبة غير المشخصين' : lang === 'fr' ? 'Non diagnostiqués' : 'Undiagnosed', value: '83%', description: lang === 'ar' ? 'من المصابين' : lang === 'fr' ? 'des patients' : 'of patients' },
+  { label: lang === 'ar' ? 'متوسط وقت التشخيص' : lang === 'fr' ? 'Délai de diagnostic' : 'Avg. Diagnosis Time', value: '6-10', description: lang === 'ar' ? 'سنوات' : lang === 'fr' ? 'années' : 'years' },
+  { label: lang === 'ar' ? 'تحسن الأعراض' : lang === 'fr' ? 'Amélioration des symptômes' : 'Symptom Improvement', value: '95%', description: lang === 'ar' ? 'بعد الحمية' : lang === 'fr' ? 'après le régime' : 'after diet' }
 ]
 
 export default function ResearchPage() {
+  const { language } = useLanguageStore()
+  const dir = getDirection(language)
+
   return (
     <div className="space-y-8">
       {/* Header */}
@@ -181,8 +186,8 @@ export default function ResearchPage() {
             <FlaskConical className="w-6 h-6 text-primary" />
           </div>
           <div>
-            <h1 className="text-3xl font-bold">الأبحاث العلمية</h1>
-            <p className="text-muted-foreground">أحدث الدراسات والأبحاث عن السيلياك من مصادر موثوقة</p>
+            <h1 className="text-3xl font-bold">{t('research.title', language)}</h1>
+            <p className="text-muted-foreground">{t('research.description', language)}</p>
           </div>
         </div>
       </motion.div>
@@ -194,7 +199,7 @@ export default function ResearchPage() {
         transition={{ delay: 0.1 }}
         className="grid grid-cols-2 md:grid-cols-4 gap-4"
       >
-        {statistics.map((stat) => (
+        {getStatistics(language).map((stat) => (
           <Card key={stat.label} className="text-center">
             <CardContent className="p-6">
               <p className="text-3xl font-bold text-primary">{stat.value}</p>
@@ -218,8 +223,12 @@ export default function ResearchPage() {
               <CardHeader>
                 <div className="flex items-start justify-between gap-4">
                   <div>
-                    <CardTitle className="text-lg leading-relaxed">{research.title}</CardTitle>
-                    <p className="text-sm text-muted-foreground mt-1">{research.titleFr} | {research.titleEn}</p>
+                    <CardTitle className="text-lg leading-relaxed">
+                      {language === 'ar' ? research.title : language === 'fr' ? research.titleFr : research.titleEn}
+                    </CardTitle>
+                    <p className="text-sm text-muted-foreground mt-1">
+                      {language === 'ar' ? `${research.titleFr} | ${research.titleEn}` : language === 'fr' ? `${research.title} | ${research.titleEn}` : `${research.title} | ${research.titleFr}`}
+                    </p>
                     <CardDescription className="flex items-center gap-4 mt-2 flex-wrap">
                       <span className="flex items-center gap-1">
                         <Users className="w-4 h-4" />
@@ -238,14 +247,21 @@ export default function ResearchPage() {
                   <Button variant="outline" size="sm" asChild>
                     <a href={research.link} target="_blank" rel="noopener noreferrer">
                       <Globe className="w-4 h-4 ml-1" />
-                      عرض
+                      {language === 'ar' ? 'عرض' : language === 'fr' ? 'Voir' : 'View'}
                     </a>
                   </Button>
                 </div>
               </CardHeader>
               <CardContent>
-                <p className="text-sm text-muted-foreground mb-2">{research.abstract}</p>
-                <p className="text-xs text-muted-foreground/70 mb-4" dir="ltr">{research.abstractFr}</p>
+                <p className="text-sm text-muted-foreground mb-2">
+                  {language === 'ar' ? research.abstract : research.abstractFr}
+                </p>
+                {language !== 'ar' && (
+                  <p className="text-xs text-muted-foreground/70 mb-4">{research.abstract}</p>
+                )}
+                {language === 'ar' && (
+                  <p className="text-xs text-muted-foreground/70 mb-4" dir="ltr">{research.abstractFr}</p>
+                )}
                 <div className="flex flex-wrap gap-2">
                   {research.tags.map((tag) => (
                     <Badge key={tag} variant="secondary">
@@ -267,16 +283,16 @@ export default function ResearchPage() {
       >
         <Card>
           <CardHeader>
-            <CardTitle>مصادر علمية موثوقة</CardTitle>
-            <CardDescription>روابط مباشرة لقواعد البيانات العلمية</CardDescription>
+            <CardTitle>{language === 'ar' ? 'مصادر علمية موثوقة' : language === 'fr' ? 'Sources scientifiques fiables' : 'Trusted Scientific Sources'}</CardTitle>
+            <CardDescription>{language === 'ar' ? 'روابط مباشرة لقواعد البيانات العلمية' : language === 'fr' ? 'Liens directs vers les bases de données scientifiques' : 'Direct links to scientific databases'}</CardDescription>
           </CardHeader>
           <CardContent>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {[
-                { name: "NCBI - المركز الوطني لمعلومات التقنية الحيوية", url: "https://www.ncbi.nlm.nih.gov/" },
-                { name: "PubMed - قاعدة بيانات البحوث الطبية", url: "https://pubmed.ncbi.nlm.nih.gov/" },
-                { name: "ScienceDirect - مجلات علمية محكمة", url: "https://www.sciencedirect.com/" },
-                { name: "Celiac Disease Foundation", url: "https://celiac.org/" }
+                { name: language === 'ar' ? 'NCBI - المركز الوطني لمعلومات التقنية الحيوية' : 'NCBI - National Center for Biotechnology Information', url: 'https://www.ncbi.nlm.nih.gov/' },
+                { name: language === 'ar' ? 'PubMed - قاعدة بيانات البحوث الطبية' : language === 'fr' ? 'PubMed - Base de données de recherche médicale' : 'PubMed - Medical Research Database', url: 'https://pubmed.ncbi.nlm.nih.gov/' },
+                { name: language === 'ar' ? 'ScienceDirect - مجلات علمية محكمة' : language === 'fr' ? 'ScienceDirect - Revues scientifiques' : 'ScienceDirect - Scientific Journals', url: 'https://www.sciencedirect.com/' },
+                { name: 'Celiac Disease Foundation', url: 'https://celiac.org/' }
               ].map((link) => (
                 <Button
                   key={link.name}

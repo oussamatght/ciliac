@@ -16,6 +16,8 @@ import {
   ExternalLink,
   Loader2
 } from "lucide-react"
+import { useLanguageStore } from "@/lib/store"
+import { t, getDirection, type Language } from "@/lib/translations"
 
 // Dynamic import for Leaflet (client-side only)
 const MapContainer = dynamic(
@@ -208,6 +210,13 @@ const categoryColors: Record<string, string> = {
   "سوبرماركت": "bg-purple-500"
 }
 
+const categoryTranslations: Record<string, Record<string, string>> = {
+  "متجر": { ar: 'متجر', fr: 'Magasin', en: 'Store' },
+  "مخبزة": { ar: 'مخبزة', fr: 'Boulangerie', en: 'Bakery' },
+  "مطعم": { ar: 'مطعم', fr: 'Restaurant', en: 'Restaurant' },
+  "سوبرماركت": { ar: 'سوبرماركت', fr: 'Supermarché', en: 'Supermarket' },
+}
+
 interface Location {
   id: number
   name: string
@@ -220,6 +229,8 @@ interface Location {
 }
 
 export default function MapsPage() {
+  const { language } = useLanguageStore()
+  const dir = getDirection(language)
   const [selectedLocation, setSelectedLocation] = useState(null as Location | null)
   const [filter, setFilter] = useState("all")
   const [isClient, setIsClient] = useState(false)
@@ -249,8 +260,8 @@ export default function MapsPage() {
             <MapPin className="w-6 h-6 text-primary" />
           </div>
           <div>
-            <h1 className="text-3xl font-bold">خريطة المواقع</h1>
-            <p className="text-muted-foreground">اعثر على متاجر ومطاعم خالية من الغلوتين في الجزائر</p>
+            <h1 className="text-3xl font-bold">{t('maps.title', language)}</h1>
+            <p className="text-muted-foreground">{t('maps.description', language)}</p>
           </div>
         </div>
       </motion.div>
@@ -270,7 +281,7 @@ export default function MapsPage() {
             onClick={() => setFilter(cat)}
             className="rounded-full"
           >
-            {cat === "all" ? "الكل" : cat}
+            {cat === "all" ? t('maps.all', language) : (categoryTranslations[cat]?.[language] || cat)}
             {cat !== "all" && (
               <Badge variant="secondary" className="mr-2">
                 {locations.filter(l => l.category === cat).length}
@@ -331,7 +342,7 @@ export default function MapsPage() {
                                   rel="noopener noreferrer"
                                   className="text-xs text-blue-600 hover:underline"
                                 >
-                                  عرض على الفيسبوك
+                                  Facebook
                                 </a>
                               )}
                             </div>
@@ -360,7 +371,7 @@ export default function MapsPage() {
             <CardContent className="p-4 h-full overflow-y-auto">
               <h3 className="font-semibold mb-4 flex items-center gap-2">
                 <Navigation className="w-4 h-4" />
-                قائمة المواقع ({filteredLocations.length})
+                {t('maps.locationList', language)} ({filteredLocations.length})
               </h3>
               <div className="space-y-3">
                 {filteredLocations.map((location) => {
@@ -386,7 +397,7 @@ export default function MapsPage() {
                           <p className="text-xs text-muted-foreground truncate">{location.address}</p>
                           <div className="flex items-center gap-2 mt-2">
                             <Badge variant="secondary" className="text-xs">
-                              {location.category}
+                              {categoryTranslations[location.category]?.[language] || location.category}
                             </Badge>
                             {location.phone && (
                               <a 
@@ -395,7 +406,7 @@ export default function MapsPage() {
                                 onClick={(e) => e.stopPropagation()}
                               >
                                 <Phone className="w-3 h-3" />
-                                اتصال
+                                {t('maps.call', language)}
                               </a>
                             )}
                             {location.link && (
@@ -407,7 +418,7 @@ export default function MapsPage() {
                                 onClick={(e) => e.stopPropagation()}
                               >
                                 <ExternalLink className="w-3 h-3" />
-                                رابط
+                                {t('maps.link', language)}
                               </a>
                             )}
                           </div>
@@ -434,12 +445,10 @@ export default function MapsPage() {
               <MapPin className="w-8 h-8 text-blue-600 shrink-0" />
               <div>
                 <h3 className="font-semibold text-blue-800 dark:text-blue-200 mb-2">
-                  هل تعرف متجراً آخر؟
+                  {t('maps.knowAnotherStore', language)}
                 </h3>
                 <p className="text-sm text-blue-700 dark:text-blue-300">
-                  إذا كنت تعرف متجراً أو مخبزة أو مطعماً يقدم منتجات خالية من الغلوتين 
-                  ولم يكن مدرجاً في خريطتنا، يرجى التواصل معنا لإضافته. 
-                  هدفنا هو توفير أكبر قاعدة بيانات للمواقع الصديقة لمرضى السيلياك في الجزائر.
+                  {t('maps.knowAnotherStoreDesc', language)}
                 </p>
               </div>
             </div>

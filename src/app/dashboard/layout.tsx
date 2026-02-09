@@ -64,7 +64,7 @@ const menuItemsConfig = [
   { key: "maps", href: "/dashboard/maps", icon: MapPin },
   { key: "research", href: "/dashboard/research", icon: FlaskConical },
   { key: "partners", href: "/dashboard/partners", icon: Handshake },
-  { key: "prescription", href: "/dashboard/prescription", icon: FileText },
+  { key: "medicalFile", href: "/dashboard/prescription", icon: FileText },
   { key: "contact", href: "/dashboard/contact", icon: Phone },
   { key: "about", href: "/dashboard/about", icon: Info },
 ]
