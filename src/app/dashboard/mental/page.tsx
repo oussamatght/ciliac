@@ -222,7 +222,7 @@ export default function MentalPage() {
                     <span dir="ltr">{psy.phone}</span>
                   </div>
                   <Button className="w-full mt-2" variant="outline" asChild>
-                    <a href={`tel:${psy.phone}`}>
+                    <a href={`https://wa.me/${psy.phone.replace(/\D/g, '')}`} target="_blank" rel="noopener noreferrer" className="flex items-center justify-center gap-2">
                       <Phone className="w-4 h-4 me-2" />
                       {t('mental.bookAppointment', language)}
                     </a>

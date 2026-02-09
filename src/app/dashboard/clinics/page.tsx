@@ -183,7 +183,7 @@ export default function ClinicsPage() {
                   </div>
                 </div>
                 <Button variant="outline" size="sm" className="w-full mt-2" asChild>
-                  <a href={`tel:${clinic.phone}`}>
+                  <a href={`https://wa.me/${clinic.phone.replace(/\D/g, '')}`} target="_blank" rel="noopener noreferrer" className="flex items-center justify-center gap-2">
                     <Phone className="w-4 h-4 me-2" />
                     {t('clinics.call', language)} - <span dir="ltr">{clinic.phone}</span>
                   </a>
